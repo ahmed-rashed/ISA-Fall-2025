@@ -23,15 +23,16 @@ for n=1:4
     h_G_row(n_vec)=linspace(h_G0_row(n_grad),h_G0_row(n_grad+1),N_layer);
     T_row(n_vec)=T_0_row(n_grad)+a_0_row(n).*(h_G_row(n_vec)-h_G0_row(n_grad));
     p_row(n_vec)=p_0_row(n_grad).*(T_row(n_vec)./T_0_row(n_grad)).^(-g_0./a_0_row(n)./R);
+end
 
-    if n<4
-        n_iso=2*n;
-        n_vec=n_grad*N_layer+(1:N_layer);
+for n=1:3
+    n_grad=2*n-1;
+    n_iso=2*n;
+    n_vec=n_grad*N_layer+(1:N_layer);
 
-        h_G_row(n_vec)=linspace(h_G0_row(n_iso),h_G0_row(n_iso+1),N_layer);
-        T_row(n_vec)=repmat(T_0_row(n_iso),1,N_layer);
-        p_row(n_vec)=p_0_row(n_iso).*exp(-g_0.*(h_G_row(n_vec)-h_G0_row(n_iso))./R./T_0_row(n_iso));
-    end
+    h_G_row(n_vec)=linspace(h_G0_row(n_iso),h_G0_row(n_iso+1),N_layer);
+    T_row(n_vec)=repmat(T_0_row(n_iso),1,N_layer);
+    p_row(n_vec)=p_0_row(n_iso).*exp(-g_0.*(h_G_row(n_vec)-h_G0_row(n_iso))./R./T_0_row(n_iso));
 end
 
 h_row=r.*h_G_row./(r+h_G_row);
