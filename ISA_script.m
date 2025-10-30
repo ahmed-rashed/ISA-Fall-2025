@@ -18,8 +18,7 @@ T_row=nan(1,7*N_layer);
 p_row=nan(1,7*N_layer);
 for n=1:4
     n_grad=2*n-1;
-    n_vec=(2*(n-1)*N_layer+1):n_grad*N_layer;
-    % n_vec=2*(n-1)+(1:N_layer);
+    n_vec=2*(n-1)*N_layer+(1:N_layer);
 
     h_G_row(n_vec)=linspace(h_G0_row(n_grad),h_G0_row(n_grad+1),N_layer);
     T_row(n_vec)=T_0_row(n_grad)+a_0_row(n).*(h_G_row(n_vec)-h_G0_row(n_grad));
@@ -27,8 +26,7 @@ for n=1:4
 
     if n<4
         n_iso=2*n;
-        n_vec=(n_grad*N_layer+1):n_iso*N_layer;
-        % n_vec=n_grad+(1:N_layer);
+        n_vec=n_grad*N_layer+(1:N_layer);
 
         h_G_row(n_vec)=linspace(h_G0_row(n_iso),h_G0_row(n_iso+1),N_layer);
         T_row(n_vec)=repmat(T_0_row(n_iso),1,N_layer);
