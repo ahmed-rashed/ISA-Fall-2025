@@ -13,34 +13,30 @@ p_0_row=[101330,22633,2488.7,120.45,58.323,1.0095,0.10444];
 a_0_row=[-.0065,.003,-.0045,.004];
 
 N_layer=100;
-h_G1_row=linspace(h_G0_row(1),h_G0_row(2),N_layer);
-h_G2_row=linspace(h_G0_row(2),h_G0_row(3),N_layer);
-h_G3_row=linspace(h_G0_row(3),h_G0_row(4),N_layer);
-h_G4_row=linspace(h_G0_row(4),h_G0_row(5),N_layer);
-h_G5_row=linspace(h_G0_row(5),h_G0_row(6),N_layer);
-h_G6_row=linspace(h_G0_row(6),h_G0_row(7),N_layer);
-h_G7_row=linspace(h_G0_row(7),h_G0_row(8),N_layer);
-h_G_row=[h_G1_row,h_G2_row,h_G3_row,h_G4_row,h_G5_row,h_G6_row,h_G7_row];
+h_G_row=nan(1,7*N_layer);
+T_row=nan(1,7*N_layer);
+p_row=nan(1,7*N_layer);
+for n=1:4
+    n_grad=2*n-1;
+    n_vec=(2*(n-1)*N_layer+1):n_grad*N_layer;
+    % n_vec=2*(n-1)+(1:N_layer);
+
+    h_G_row(n_vec)=linspace(h_G0_row(n_grad),h_G0_row(n_grad+1),N_layer);
+    T_row(n_vec)=T_0_row(n_grad)+a_0_row(n).*(h_G_row(n_vec)-h_G0_row(n_grad));
+    p_row(n_vec)=p_0_row(n_grad).*(T_row(n_vec)./T_0_row(n_grad)).^(-g_0./a_0_row(n)./R);
+
+    if n<4
+        n_iso=2*n;
+        n_vec=(n_grad*N_layer+1):n_iso*N_layer;
+        % n_vec=n_grad+(1:N_layer);
+
+        h_G_row(n_vec)=linspace(h_G0_row(n_iso),h_G0_row(n_iso+1),N_layer);
+        T_row(n_vec)=repmat(T_0_row(n_iso),1,N_layer);
+        p_row(n_vec)=p_0_row(n_iso).*exp(-g_0.*(h_G_row(n_vec)-h_G0_row(n_iso))./R./T_0_row(n_iso));
+    end
+end
 
 h_row=r.*h_G_row./(r+h_G_row);
-
-T1_row=T_0_row(1)+a_0_row(1).*(h_G1_row-h_G0_row(1));
-T2_row=repmat(T_0_row(2),1,N_layer);
-T3_row=T_0_row(3)+a_0_row(2).*(h_G3_row-h_G0_row(3));
-T4_row=repmat(T_0_row(4),1,N_layer);
-T5_row=T_0_row(5)+a_0_row(3).*(h_G5_row-h_G0_row(5));
-T6_row=repmat(T_0_row(6),1,N_layer);
-T7_row=T_0_row(7)+a_0_row(4).*(h_G7_row-h_G0_row(7));
-T_row=[T1_row,T2_row,T3_row,T4_row,T5_row,T6_row,T7_row];
-
-p1_row=p_0_row(1).*(T1_row./T_0_row(1)).^(-g_0./a_0_row(1)./R);
-p2_row=p_0_row(2).*exp(-g_0.*(h_G2_row-h_G0_row(2))./R./T_0_row(2));
-p3_row=p_0_row(3).*(T3_row./T_0_row(3)).^(-g_0./a_0_row(2)./R);
-p4_row=p_0_row(4).*exp(-g_0.*(h_G4_row-h_G0_row(4))./R./T_0_row(4));
-p5_row=p_0_row(5).*(T5_row./T_0_row(5)).^(-g_0./a_0_row(3)./R);
-p6_row=p_0_row(6).*exp(-g_0.*(h_G6_row-h_G0_row(6))./R./T_0_row(6));
-p7_row=p_0_row(7).*(T7_row./T_0_row(7)).^(-g_0./a_0_row(4)./R);
-p_row=[p1_row,p2_row,p3_row,p4_row,p5_row,p6_row,p7_row];
 
 rho_row=p_row./R./T_row;
 a_row=sqrt(gamma.*R.*T_row);
