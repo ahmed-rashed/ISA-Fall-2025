@@ -13,33 +13,28 @@ a_0_row=[-.0065,.003,-.0045,.004];
 sz_vec=size(h_G_arr);
 T_arr=nan(sz_vec);
 p_arr=nan(sz_vec);
+
+N_layers=length(h_G0_row)-1;
+
 n=1;
 for h_G=h_G_arr(:).'
-    if h_G<h_G0_row(1)
-        error("h_G_arr elements must be higher than "+h_G0_row(1)+'!');
-    elseif h_G<=h_G0_row(2) % 1st layer
-        T_arr(n)=T_0_row(1)+a_0_row(1).*(h_G-h_G0_row(1));
-        p_arr(n)=p_0_row(1).*(T_arr(n)./T_0_row(1)).^(-g_0./a_0_row(1)./R);
-    elseif h_G<=h_G0_row(3) % 2nd layer
-        T_arr(n)=T_0_row(2);
-        p_arr(n)=p_0_row(2).*exp(-g_0.*(h_G-h_G0_row(2))./R./T_0_row(2));
-    elseif h_G<=h_G0_row(4) % 3rd layer
-        T_arr(n)=T_0_row(3)+a_0_row(2).*(h_G-h_G0_row(3));
-        p_arr(n)=p_0_row(3).*(T_arr(n)./T_0_row(3)).^(-g_0./a_0_row(2)./R);
-    elseif h_G<=h_G0_row(5) % 4th layer
-        T_arr(n)=T_0_row(4);
-        p_arr(n)=p_0_row(4).*exp(-g_0.*(h_G-h_G0_row(4))./R./T_0_row(4));
-    elseif h_G<=h_G0_row(6) % 5th layer
-        T_arr(n)=T_0_row(5)+a_0_row(3).*(h_G-h_G0_row(5));
-        p_arr(n)=p_0_row(5).*(T_arr(n)./T_0_row(5)).^(-g_0./a_0_row(3)./R);
-    elseif h_G<=h_G0_row(7) % 6th layer
-        T_arr(n)=T_0_row(6);
-        p_arr(n)=p_0_row(6).*exp(-g_0.*(h_G-h_G0_row(6))./R./T_0_row(6));
-    elseif h_G<=h_G0_row(8) % 7th layer
-        T_arr(n)=T_0_row(7)+a_0_row(4).*(h_G-h_G0_row(7));
-        p_arr(n)=p_0_row(7).*(T_arr(n)./T_0_row(7)).^(-g_0./a_0_row(4)./R);
-    else
-        error("h_G_arr elements must be less than "+h_G0_row(8)+'!');
+    if h_G<h_G0_row(1) || h_G>h_G0_row(end)
+        error("h_G_arr elements must be within ["+h_G0_row(1)+','+h_G0_row(1)+']!');
+    end
+
+    for n_layer=1:N_layers
+        if h_G<=h_G0_row(n_layer+1) % 1st layer
+            if mod(n_layer,2)~=0    % gradient layer
+                a_0=a_0_row((n_layer+1)/2);
+                T_arr(n)=T_0_row(n_layer)+a_0.*(h_G-h_G0_row(n_layer));
+                p_arr(n)=p_0_row(n_layer).*(T_arr(n)./T_0_row(n_layer)).^(-g_0./a_0./R);
+            else    % isothermal layer
+                T_arr(n)=T_0_row(n_layer);
+                p_arr(n)=p_0_row(n_layer).*exp(-g_0.*(h_G-h_G0_row(n_layer))./R./T_0_row(n_layer));
+            end
+
+            break
+        end
     end
     
     n=n+1;
